@@ -1,69 +1,37 @@
-// Distribución por área
-const ctx1 = document.getElementById('areaChart');
-new Chart(ctx1, {
-  type: 'pie',
-  data: {
-    labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
-    datasets: [{
-      data: [19 , 18 , 7 , 6 ], 
-      backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14']
-    }]
-  }
-});
+// Datos de los gráficos
+const AREAS = {
+  labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
+  data: [19, 18, 7, 6],
+  backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14'],
+};
 
-// Distribución por área (copia para slide 3)
-const ctx1_copy = document.getElementById('areaChart2');
-new Chart(ctx1_copy, {
-  type: 'pie',
-  data: {
-    labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
-    datasets: [{
-      data: [19 , 18 , 7 , 6 ], 
-      backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14']
-    }]
-  }
-});
+const EQUIPOS = {
+  labels: ['Picking', 'Backup', 'Libre Uso'],
+  data: [50, 10, 72],
+};
 
-// Resumen de equipos
-const ctx2 = document.getElementById('equiposChart');
-new Chart(ctx2, {
-  type: 'bar',
-  data: {
-    labels: ['Picking', 'Backup', 'Libre Uso'], 
-    datasets: [{
-      label: 'Equipos',
-      data: [50, 10, 72],
-      backgroundColor: '#0d6efd'
-    }]
-  },
-  options: {
-    plugins: {
-      legend: { display: false }
+// Crea un gráfico solo si su canvas existe en la página.
+function crearGrafico(id, tipo, datos, backgroundColor) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+
+  new Chart(canvas, {
+    type: tipo,
+    data: {
+      labels: datos.labels,
+      datasets: [{ data: datos.data, backgroundColor }],
     },
-    scales: {
-      y: { beginAtZero: true }
-    }
-  }
-});
+    options:
+      tipo === 'bar'
+        ? { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        : {},
+  });
+}
 
-// Resumen de equipos (copia para slide 2)
-const ctx2_copy = document.getElementById('equiposChart2');
-new Chart(ctx2_copy, {
-  type: 'bar',
-  data: {
-    labels: ['Picking', 'Backup', 'Libre Uso'], 
-    datasets: [{
-      label: 'Equipos',
-      data: [50, 10, 72],
-      backgroundColor: '#0d6efd'
-    }]
-  },
-  options: {
-    plugins: {
-      legend: { display: false }
-    },
-    scales: {
-      y: { beginAtZero: true }
-    }
-  }
-});
+// Distribución por área (slides 1 y 3)
+crearGrafico('areaChart', 'pie', AREAS, AREAS.backgroundColor);
+crearGrafico('areaChart2', 'pie', AREAS, AREAS.backgroundColor);
+
+// Resumen de equipos (slides 1 y 2)
+crearGrafico('equiposChart', 'bar', EQUIPOS, '#0d6efd');
+crearGrafico('equiposChart2', 'bar', EQUIPOS, '#0d6efd');
