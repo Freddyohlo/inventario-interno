@@ -116,15 +116,17 @@ function entrarAlPanel() {
 
 async function cargarTodo() {
   try {
-    const [resumen, equipos, actualizaciones, reparaciones] = await Promise.all([
+    const [resumen, equipos, detalle, actualizaciones, reparaciones] = await Promise.all([
       rest('resumen?select=clave,cantidad,detalle,orden&order=orden'),
       rest('equipos?select=id,tipo,codigo,serie&order=codigo'),
+      rest('equipos_detalle?select=id,tipo,codigo,nombre,descripcion,foto_url&order=codigo'),
       rest('actualizaciones?select=id,fecha,leyenda&order=fecha.desc'),
       rest('reparaciones?select=id,fecha,usuario,equipo,empresa,observacion&order=fecha.desc'),
     ]);
-    cache = { resumen, equipos, actualizaciones, reparaciones };
+    cache = { resumen, equipos, detalle, actualizaciones, reparaciones };
     pintarResumen();
     pintarEquipos();
+    pintarDetalle();
     pintarActualizaciones();
     pintarReparaciones();
     cargarBitacora();
@@ -248,6 +250,224 @@ document.getElementById('btnGuardarEquipos').addEventListener('click', async () 
       }
     }
     aviso('Equipos guardados');
+    cargarTodo();
+  } catch (e) {
+    aviso('Error: ' + e.message);
+  }
+});
+
+// ---------------------------------------------------------------- equipos en detalle
+
+const NOMBRE_TIPO_DETALLE = { laboratorio: 'Equipos en Laboratorio', detalle: 'Equipos con Detalle' };
+
+/** Clave del resumen que corresponde a cada tipo. */
+const CLAVE_RESUMEN = { laboratorio: 'equiposLab', detalle: 'equiposDetalle' };
+
+/** Cantidad declarada en el resumen (la condicionante). */
+function cantidadDeclarada(tipo) {
+  const fila = cache.resumen.find((r) => r.clave === CLAVE_RESUMEN[tipo]);
+  return fila ? fila.cantidad : 0;
+}
+
+function pintarDetalle() {
+  const tipo = document.getElementById('tipoDetalle').value;
+  const filas = cache.detalle.filter((d) => d.tipo === tipo);
+  const cont = document.getElementById('listaDetalle');
+
+  cont.innerHTML = filas
+    .map(
+      (f) => `
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100" data-id="${f.id}">
+        <div class="card-body">
+          <div class="text-center mb-2">
+            <img class="dt-preview rounded" src="${f.foto_url ? window.InventarioAPI.urlFoto(f.foto_url) : ''}"
+                 alt="" style="width:100%;height:130px;object-fit:cover;background:#eef2f7;${f.foto_url ? '' : 'display:none;'}">
+            <div class="dt-sin-foto text-muted small py-4" style="${f.foto_url ? 'display:none;' : ''}">
+              <i class="bi bi-camera" style="font-size:1.6rem;"></i><br>Sin foto
+            </div>
+          </div>
+          <input type="file" class="form-control form-control-sm dt-file mb-2" accept="image/*">
+          <input type="text" class="form-control form-control-sm mb-2 dt-codigo" placeholder="Código (T16)" value="${(f.codigo || '').replace(/"/g, '&quot;')}">
+          <input type="text" class="form-control form-control-sm mb-2 dt-nombre" placeholder="Nombre del equipo" value="${(f.nombre || '').replace(/"/g, '&quot;')}">
+          <textarea class="form-control form-control-sm dt-descripcion" rows="2" placeholder="Descripción del desperfecto">${(f.descripcion || '').replace(/</g, '&lt;')}</textarea>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span class="badge bg-light text-dark dt-estado">${f.foto_url ? 'Foto cargada' : 'Falta foto'}</span>
+            <button class="btn btn-sm btn-outline-danger dt-borrar"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`
+    )
+    .join('');
+
+  actualizarCondicionante();
+}
+
+/** Muestra si falta subir fotos para cumplir con la cantidad declarada. */
+function actualizarCondicionante() {
+  const tipo = document.getElementById('tipoDetalle').value;
+  const declarada = cantidadDeclarada(tipo);
+  const conFoto = [...document.querySelectorAll('#listaDetalle .dt-preview')]
+    .filter((img) => img.style.display !== 'none').length;
+  const total = document.querySelectorAll('#listaDetalle .card').length;
+
+  const aviso = document.getElementById('avisoCondicionante');
+  aviso.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger');
+
+  if (declarada === 0 && total === 0) {
+    aviso.classList.add('alert', 'alert-secondary');
+    aviso.innerHTML = `<i class="bi bi-info-circle"></i> No hay equipos declarados en el resumen.`;
+    return;
+  }
+
+  if (total !== declarada) {
+    aviso.classList.add('alert', 'alert-warning');
+    aviso.innerHTML = `<i class="bi bi-exclamation-triangle"></i> El resumen declara <strong>${declarada}</strong> equipo(s) y aquí hay <strong>${total}</strong>. Ajústalos con "Agregar equipo" o "Ajustar a la cantidad del resumen".`;
+    return;
+  }
+
+  if (conFoto < declarada) {
+    aviso.classList.add('alert', 'alert-warning');
+    aviso.innerHTML = `<i class="bi bi-camera"></i> Faltan fotos: <strong>${conFoto} de ${declarada}</strong> equipos tienen foto. Cada equipo necesita la suya.`;
+    return;
+  }
+
+  aviso.classList.add('alert', 'alert-success');
+  aviso.innerHTML = `<i class="bi bi-check-circle"></i> Todo en orden: <strong>${declarada}</strong> equipo(s) con su foto y descripción.`;
+}
+
+document.getElementById('tipoDetalle').addEventListener('change', pintarDetalle);
+
+/** Al elegir un archivo: valida 2 MB, comprime y actualiza la vista previa. */
+document.getElementById('listaDetalle').addEventListener('change', async (e) => {
+  const input = e.target.closest('.dt-file');
+  if (!input) return;
+  const card = input.closest('.card');
+  const archivo = input.files[0];
+  if (!archivo) return;
+
+  const resultado = await window.OptimizadorImagen.optimizarImagen(archivo);
+  if (!resultado.ok) {
+    aviso(resultado.error);
+    input.value = '';
+    return;
+  }
+
+  const preview = card.querySelector('.dt-preview');
+  const sinFoto = card.querySelector('.dt-sin-foto');
+  preview.src = URL.createObjectURL(resultado.blob);
+  preview.style.display = '';
+  sinFoto.style.display = 'none';
+  card.dataset.pendiente = '1';
+  card.dataset.pesoFinal = resultado.pesoFinal;
+
+  card.querySelector('.dt-estado').textContent =
+    `Lista para subir (${window.OptimizadorImagen.formatearPeso(resultado.pesoFinal)})`;
+  actualizarCondicionante();
+});
+
+document.getElementById('listaDetalle').addEventListener('click', (e) => {
+  if (e.target.closest('.dt-borrar')) {
+    e.target.closest('.col-md-6').remove();
+    actualizarCondicionante();
+  }
+});
+
+/** Agrega una tarjeta vacía para un equipo nuevo. */
+document.getElementById('btnNuevoDetalle').addEventListener('click', () => {
+  const tipo = document.getElementById('tipoDetalle').value;
+  cache.detalle.push({ id: '', tipo, codigo: '', nombre: '', descripcion: '', foto_url: '' });
+  pintarDetalle();
+});
+
+/** Rellena o quita tarjetas hasta igualar la cantidad del resumen. */
+document.getElementById('btnSincronizarDetalle').addEventListener('click', () => {
+  const tipo = document.getElementById('tipoDetalle').value;
+  const declarada = cantidadDeclarada(tipo);
+  const actuales = document.querySelectorAll('#listaDetalle .card').length;
+
+  if (actuales < declarada) {
+    for (let i = actuales; i < declarada; i += 1) {
+      cache.detalle.push({ id: '', tipo, codigo: '', nombre: '', descripcion: '', foto_url: '' });
+    }
+    pintarDetalle();
+    aviso(`Se agregaron ${declarada - actuales} tarjeta(s).`);
+  } else if (actuales > declarada) {
+    aviso(`Hay más tarjetas (${actuales}) que equipos declarados (${declarada}). Elimina las que sobren.`);
+  } else {
+    aviso('Ya coinciden con la cantidad declarada.');
+  }
+});
+
+/** Sube una foto a Storage y devuelve su ruta. */
+async function subirFoto(archivo) {
+  const resultado = await window.OptimizadorImagen.optimizarImagen(archivo);
+  if (!resultado.ok) throw new Error(resultado.error);
+
+  const res = await fetch(
+    `${URL_BASE}/storage/v1/object/fotos-equipos/${resultado.nombre}`,
+    {
+      method: 'POST',
+      headers: {
+        apikey: ANON,
+        Authorization: `Bearer ${sesion?.access_token}`,
+        'Content-Type': 'image/jpeg',
+        'x-upsert': 'true',
+      },
+      body: resultado.blob,
+    },
+  );
+  if (!res.ok) throw new Error(`No se pudo subir la foto (${res.status})`);
+  return resultado.nombre;
+}
+
+document.getElementById('btnGuardarDetalle').addEventListener('click', async () => {
+  const tipo = document.getElementById('tipoDetalle').value;
+  const declarada = cantidadDeclarada(tipo);
+  const tarjetas = [...document.querySelectorAll('#listaDetalle .card')];
+
+  // Condicionante: mismo numero de equipos que declara el resumen
+  if (declarada > 0 && tarjetas.length !== declarada) {
+    aviso(`El resumen declara ${declarada} equipo(s) pero hay ${tarjetas.length}. Ajústalos antes de guardar.`);
+    return;
+  }
+
+  try {
+    for (const card of tarjetas) {
+      const codigo = card.querySelector('.dt-codigo').value.trim();
+      const nombre = card.querySelector('.dt-nombre').value.trim();
+      const descripcion = card.querySelector('.dt-descripcion').value.trim();
+      const input = card.querySelector('.dt-file');
+
+      if (!codigo || !nombre) {
+        aviso('Cada equipo necesita al menos código y nombre.');
+        return;
+      }
+
+      let foto = cache.detalle.find((d) => String(d.id) === card.dataset.id)?.foto_url || '';
+      if (input.files[0]) {
+        card.querySelector('.dt-estado').textContent = 'Subiendo…';
+        foto = await subirFoto(input.files[0]);
+      }
+
+      if (!foto) {
+        aviso(`El equipo ${codigo} no tiene foto. Cada equipo necesita la suya.`);
+        return;
+      }
+
+      const cuerpo = { tipo, codigo, nombre, descripcion, foto_url: foto };
+      if (card.dataset.id) {
+        await rest(`equipos_detalle?id=eq.${card.dataset.id}`, {
+          method: 'PATCH', body: JSON.stringify(cuerpo),
+        });
+        await registrar('editar', 'equipos_detalle', `${NOMBRE_TIPO_DETALLE[tipo]} ${codigo}`);
+      } else {
+        await rest('equipos_detalle', { method: 'POST', body: JSON.stringify(cuerpo) });
+        await registrar('crear', 'equipos_detalle', `${NOMBRE_TIPO_DETALLE[tipo]} ${codigo}`);
+      }
+    }
+    aviso('Equipos en detalle guardados');
     cargarTodo();
   } catch (e) {
     aviso('Error: ' + e.message);
