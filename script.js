@@ -142,103 +142,108 @@ function updateSummaryCards() {
   ).innerText = `${inventarioData.bateriasRadios} unid.`;
 }
 
-let areaChartInstance;
-let equiposChartInstance;
+/** Instancias de Chart.js por id de canvas, para poder destruirlas. */
+const graficos = {};
+
+/** Crea (o recrea) un grafico solo si su canvas esta visible. */
+function crearGrafico(id, config) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+
+  // Chart.js mide el contenedor al crear. Si el slide esta oculto
+  // (display:none) mide 0x0 y el grafico queda en blanco, asi que se omite.
+  if (canvas.offsetParent === null) return;
+
+  // Si el canvas ya tiene un grafico, hay que destruirlo antes de reusarlo.
+  if (graficos[id]) {
+    graficos[id].destroy();
+    delete graficos[id];
+  }
+
+  graficos[id] = new Chart(canvas, config);
+}
+
+const CONFIG_AREA = {
+  type: 'pie',
+  data: {
+    labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14'],
+      },
+    ],
+  },
+};
+
+const CONFIG_EQUIPOS = {
+  type: 'bar',
+  data: {
+    labels: ['Picking', 'Backup', 'Libre Uso'],
+    datasets: [{ label: 'Equipos', data: [], backgroundColor: '#0d6efd' }],
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } },
+  },
+};
+
+function datosArea() {
+  return [
+    inventarioData.distribucionAreas.peto,
+    inventarioData.distribucionAreas.lata,
+    inventarioData.distribucionAreas.jugosBarriles,
+    inventarioData.distribucionAreas.casaPiedra,
+  ];
+}
+
+function datosEquipos() {
+  return [
+    inventarioData.resumenEquipos.picking,
+    inventarioData.resumenEquipos.backup,
+    inventarioData.resumenEquipos.libreUso,
+  ];
+}
+
+function configArea() {
+  return {
+    ...CONFIG_AREA,
+    data: {
+      ...CONFIG_AREA.data,
+      datasets: [{ ...CONFIG_AREA.data.datasets[0], data: datosArea() }],
+    },
+  };
+}
+
+function configEquipos() {
+  return {
+    ...CONFIG_EQUIPOS,
+    data: {
+      ...CONFIG_EQUIPOS.data,
+      datasets: [{ ...CONFIG_EQUIPOS.data.datasets[0], data: datosEquipos() }],
+    },
+  };
+}
 
 function updateCharts() {
-  if (areaChartInstance) {
-    areaChartInstance.destroy();
-  }
-  if (equiposChartInstance) {
-    equiposChartInstance.destroy();
-  }
-  const ctx1 = document.getElementById('areaChart');
-  areaChartInstance = new Chart(ctx1, {
-    type: 'pie',
-    data: {
-      labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
-      datasets: [
-        {
-          data: [
-            inventarioData.distribucionAreas.peto,
-            inventarioData.distribucionAreas.lata,
-            inventarioData.distribucionAreas.jugosBarriles,
-            inventarioData.distribucionAreas.casaPiedra,
-          ],
-          backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14'],
-        },
-      ],
-    },
-  });
-  const ctx1_copy = document.getElementById('areaChart2');
-  new Chart(ctx1_copy, {
-    type: 'pie',
-    data: {
-      labels: ['Peto', 'Lata', 'Jugos/Barriles', 'Casa Piedra'],
-      datasets: [
-        {
-          data: [
-            inventarioData.distribucionAreas.peto,
-            inventarioData.distribucionAreas.lata,
-            inventarioData.distribucionAreas.jugosBarriles,
-            inventarioData.distribucionAreas.casaPiedra,
-          ],
-          backgroundColor: ['#28a745', '#0d6efd', '#6f42c1', '#fd7e14'],
-        },
-      ],
-    },
-  });
-  const ctx2 = document.getElementById('equiposChart');
-  equiposChartInstance = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: ['Picking', 'Backup', 'Libre Uso'],
-      datasets: [
-        {
-          label: 'Equipos',
-          data: [
-            inventarioData.resumenEquipos.picking,
-            inventarioData.resumenEquipos.backup,
-            inventarioData.resumenEquipos.libreUso,
-          ],
-          backgroundColor: '#0d6efd',
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        legend: { display: false },
-      },
-      scales: {
-        y: { beginAtZero: true },
-      },
-    },
-  });
-  const ctx2_copy = document.getElementById('equiposChart2');
-  new Chart(ctx2_copy, {
-    type: 'bar',
-    data: {
-      labels: ['Picking', 'Backup', 'Libre Uso'],
-      datasets: [
-        {
-          label: 'Equipos',
-          data: [
-            inventarioData.resumenEquipos.picking,
-            inventarioData.resumenEquipos.backup,
-            inventarioData.resumenEquipos.libreUso,
-          ],
-          backgroundColor: '#0d6efd',
-        },
-      ],
-    },
-    options: {
-      plugins: {
-        legend: { display: false },
-      },
-      scales: {
-        y: { beginAtZero: true },
-      },
-    },
+  crearGrafico('areaChart', configArea());
+  crearGrafico('areaChart2', configArea());
+  crearGrafico('equiposChart', configEquipos());
+  crearGrafico('equiposChart2', configEquipos());
+}
+
+/**
+ * Recrea los graficos del slide que se acaba de mostrar.
+ *
+ * Los slides ocultos del carrusel tienen display:none, asi que Chart.js los
+ * mide en 0x0 y quedan en blanco. Al mostrarse hay que redibujarlos.
+ */
+function inicializarCarrusel() {
+  const carrusel = document.getElementById('graficosCarousel');
+  if (!carrusel) return;
+
+  carrusel.addEventListener('slid.bs.carousel', () => {
+    updateCharts();
   });
 }
 
@@ -301,5 +306,6 @@ async function sincronizarConSupabase() {
 document.addEventListener('DOMContentLoaded', async () => {
   updateSummaryCards();
   updateCharts();
+  inicializarCarrusel();
   await sincronizarConSupabase();
 });
