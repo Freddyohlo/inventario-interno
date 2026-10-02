@@ -67,6 +67,21 @@ const InventarioAPI = {
     if (!configurado) return null;
     return rest('reparaciones?select=fecha,usuario,equipo,empresa,observacion&order=fecha.desc');
   },
+
+  /** Equipos con detalle: 'laboratorio' o 'detalle'. */
+  async equiposDetalle(tipo) {
+    if (!configurado) return null;
+    const filtro = tipo ? `&tipo=eq.${tipo}` : '';
+    return rest(`equipos_detalle?select=id,tipo,codigo,nombre,descripcion,foto_url${filtro}&order=codigo`);
+  },
+
+  /** URL publica de una foto guardada en Storage. */
+  urlFoto(ruta) {
+    if (!configurado || !ruta) return '';
+    // Si ya es una URL completa, se devuelve tal cual.
+    if (/^https?:\/\//.test(ruta)) return ruta;
+    return `${SUPABASE_URL}/storage/v1/object/public/fotos-equipos/${ruta}`;
+  },
 };
 
 window.InventarioAPI = InventarioAPI;
