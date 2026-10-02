@@ -242,7 +242,64 @@ function updateCharts() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Carga los datos desde Supabase si esta configurado.
+ *
+ * Si Supabase no responde o no esta configurado, se conservan los datos
+ * locales definidos arriba, asi el sitio nunca queda en blanco.
+ */
+async function sincronizarConSupabase() {
+  if (!window.InventarioAPI || !window.InventarioAPI.configurado) return;
+
+  try {
+    const [resumen, equipos] = await Promise.all([
+      window.InventarioAPI.resumen(),
+      window.InventarioAPI.todosLosEquipos(),
+    ]);
+
+    if (resumen) {
+      Object.keys(resumen).forEach((clave) => {
+        const valor = resumen[clave];
+        // Claves de tarjetas (cantidad + detalle)
+        if (inventarioData[clave]) {
+          inventarioData[clave].cantidad = valor.cantidad;
+          inventarioData[clave].detalle = valor.detalle;
+        }
+      });
+      // Areas y uso viven en objetos anidados
+      inventarioData.distribucionAreas = {
+        peto: resumen.areas_peto?.cantidad ?? inventarioData.distribucionAreas.peto,
+        lata: resumen.areas_lata?.cantidad ?? inventarioData.distribucionAreas.lata,
+        jugosBarriles: resumen.areas_jugos?.cantidad ?? inventarioData.distribucionAreas.jugosBarriles,
+        casaPiedra: resumen.areas_casa?.cantidad ?? inventarioData.distribucionAreas.casaPiedra,
+      };
+      inventarioData.resumenEquipos = {
+        picking: resumen.uso_picking?.cantidad ?? inventarioData.resumenEquipos.picking,
+        backup: resumen.uso_backup?.cantidad ?? inventarioData.resumenEquipos.backup,
+        libreUso: resumen.uso_libre?.cantidad ?? inventarioData.resumenEquipos.libreUso,
+      };
+      inventarioData.bateriasTrf = resumen.baterias_trf?.detalle ?? inventarioData.bateriasTrf;
+      inventarioData.bateriasImpresoras = resumen.baterias_impresoras?.detalle ?? inventarioData.bateriasImpresoras;
+      inventarioData.bateriasRadios = resumen.baterias_radios?.detalle ?? inventarioData.bateriasRadios;
+    }
+
+    // Equipos: se reemplazan los arrays locales con los de la base
+    if (equipos) {
+      trf330lData.length = 0; trf330lData.push(...equipos.trf330l);
+      zq360Data.length = 0; zq360Data.push(...equipos.zq360);
+      mc3300Data.length = 0; mc3300Data.push(...equipos.mc3300);
+      mc3400Data.length = 0; mc3400Data.push(...equipos.mc3400);
+    }
+
+    updateSummaryCards();
+    updateCharts();
+  } catch (e) {
+    console.warn('No se pudo sincronizar con Supabase, se usan los datos locales:', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   updateSummaryCards();
   updateCharts();
+  await sincronizarConSupabase();
 });

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel editor · Inventario</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f1f5f9; }
+    .card { border: none; border-radius: 1rem; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+    .navbar-brand { font-weight: 700; letter-spacing: .3px; }
+    .tabla-edit td input { font-size: .85rem; }
+    .guardado { position: fixed; right: 20px; bottom: 20px; z-index: 1050; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/"><i class="bi bi-box-seam"></i> Inventario</a>
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-white-50 small" id="usuarioActual"></span>
+        <a class="btn btn-sm btn-outline-light" href="/"><i class="bi bi-eye"></i> Ver sitio</a>
+        <button class="btn btn-sm btn-outline-danger d-none" id="btnSalir">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <!-- ==================== LOGIN ==================== -->
+    <div id="vistaLogin" class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="card p-4 mt-5">
+          <div class="text-center mb-4">
+            <i class="bi bi-shield-lock" style="font-size: 2.5rem; color: #0d6efd;"></i>
+            <h4 class="mt-2 mb-0">Panel editor</h4>
+            <p class="text-muted small mb-0">Solo personal autorizado</p>
+          </div>
+          <form id="formLogin">
+            <div class="mb-3">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-control" id="email" required autocomplete="username">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="password" required autocomplete="current-password">
+            </div>
+            <div id="loginError" class="alert alert-danger py-2 small d-none"></div>
+            <button class="btn btn-primary w-100" type="submit" id="btnLogin">Entrar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PANEL ==================== -->
+    <div id="vistaPanel" class="d-none">
+      <ul class="nav nav-pills mb-4" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabResumen"><i class="bi bi-card-list"></i> Resumen</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabEquipos"><i class="bi bi-upc-scan"></i> Equipos</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabActualizaciones"><i class="bi bi-clock-history"></i> Actualizaciones</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabReparaciones"><i class="bi bi-tools"></i> Reparaciones</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabBitacora"><i class="bi bi-journal-text"></i> Bitácora</button></li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Resumen -->
+        <div class="tab-pane fade show active" id="tabResumen">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Tarjetas del panel</h5>
+              <button class="btn btn-sm btn-primary" id="btnGuardarResumen"><i class="bi bi-save"></i> Guardar cambios</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead><tr><th>Clave</th><th style="width:110px">Cantidad</th><th>Detalle</th></tr></thead>
+                <tbody id="tbodyResumen"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Equipos -->
+        <div class="tab-pane fade" id="tabEquipos">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h5 class="mb-0">Equipos y números de serie</h5>
+              <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" id="tipoEquipo" style="width:auto">
+                  <option value="trf330l">TRF Zebra 330L</option>
+                  <option value="zq360">Impresoras ZQ360 Plus</option>
+                  <option value="mc3300">TRF Zebra MC3300</option>
+                  <option value="mc3400">TRF Zebra MC3400</option>
+                </select>
+                <button class="btn btn-sm btn-success" id="btnNuevoEquipo"><i class="bi bi-plus-lg"></i> Agregar</button>
+                <button class="btn btn-sm btn-primary" id="btnGuardarEquipos"><i class="bi bi-save"></i> Guardar</button>
+              </div>
+            </div>
+            <p class="text-muted small">Puedes editar el código y la serie, o eliminar filas. Los cambios se aplican al guardar.</p>
+            <div class="table-responsive" style="max-height: 60vh; overflow-y:auto;">
+              <table class="table table-sm align-middle tabla-edit">
+                <thead class="sticky-top bg-white"><tr><th style="width:60px">#</th><th style="width:150px">Código</th><th>Número de serie</th><th style="width:60px"></th></tr></thead>
+                <tbody id="tbodyEquipos"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actualizaciones -->
+        <div class="tab-pane fade" id="tabActualizaciones">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Historial de actualizaciones</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-success" id="btnNuevaActualizacion"><i class="bi bi-plus-lg"></i> Nueva</button>
+                <button class="btn btn-sm btn-primary" id="btnGuardarActualizaciones"><i class="bi bi-save"></i> Guardar</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle tabla-edit">
+                <thead><tr><th style="width:160px">Fecha</th><th>Leyenda</th><th style="width:60px"></th></tr></thead>
+                <tbody id="tbodyActualizaciones"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reparaciones -->
+        <div class="tab-pane fade" id="tabReparaciones">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Historial de reparaciones</h5>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-success" id="btnNuevaReparacion"><i class="bi bi-plus-lg"></i> Nueva</button>
+                <button class="btn btn-sm btn-primary" id="btnGuardarReparaciones"><i class="bi bi-save"></i> Guardar</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle tabla-edit">
+                <thead><tr><th style="width:150px">Fecha</th><th style="width:140px">Usuario</th><th style="width:130px">Equipo</th><th style="width:160px">Empresa</th><th>Observación</th><th style="width:60px"></th></tr></thead>
+                <tbody id="tbodyReparaciones"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bitacora -->
+        <div class="tab-pane fade" id="tabBitacora">
+          <div class="card p-3">
+            <h5 class="mb-3">Bitácora de cambios</h5>
+            <p class="text-muted small">Registro automático de quién editó qué y cuándo.</p>
+            <div class="table-responsive" style="max-height: 60vh; overflow-y:auto;">
+              <table class="table table-sm">
+                <thead class="sticky-top bg-white"><tr><th style="width:180px">Fecha</th><th style="width:180px">Usuario</th><th style="width:110px">Acción</th><th style="width:130px">Tabla</th><th>Detalle</th></tr></thead>
+                <tbody id="tbodyBitacora"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="aviso" class="guardado d-none">
+      <div class="alert alert-success shadow mb-0"><i class="bi bi-check-circle"></i> <span id="avisoTexto"></span></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
