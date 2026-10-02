@@ -303,9 +303,34 @@ async function sincronizarConSupabase() {
   }
 }
 
+/**
+ * Muestra la fecha de la ultima actualizacion registrada.
+ *
+ * La toma del historial (`actualizaciones`) en Supabase, asi que se actualiza
+ * sola cada vez que se agrega una entrada desde el panel.
+ */
+async function actualizarFechaEncabezado() {
+  const el = document.getElementById('fechaActualizacion');
+  if (!el || !window.InventarioAPI || !window.InventarioAPI.configurado) return;
+
+  try {
+    const filas = await window.InventarioAPI.actualizaciones();
+    if (!filas || !filas.length) {
+      el.textContent = 'Fecha última actualización: —';
+      return;
+    }
+    const ultima = filas[0].fecha; // vienen ordenadas desc
+    const [y, m, d] = ultima.slice(0, 10).split('-');
+    el.textContent = `Fecha última actualización: ${d}-${m}-${y}`;
+  } catch (e) {
+    el.textContent = 'Fecha última actualización: —';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   updateSummaryCards();
   updateCharts();
   inicializarCarrusel();
+  actualizarFechaEncabezado();
   await sincronizarConSupabase();
 });
