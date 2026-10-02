@@ -7,13 +7,26 @@ incluye páginas de detalle para cada categoría.
 > Es un **reporte interno** de solo lectura: no tiene backend ni base de datos.
 > Las cifras están definidas directamente en el HTML y el JavaScript.
 
+## 📄 Páginas
+
+| Archivo | Contenido |
+| --- | --- |
+| `index.html` | Panel principal: tarjetas de totales, gráficos y tablas de equipos con buscador |
+| `page2.html` | Detalle de equipos (laboratorio / con detalle) |
+| `page3.html` | Historial de actualizaciones |
+| `page4.html` | Historial de reparaciones |
+| `pasos.html` | Guías de procedimientos (reseteo, configuración, pasillos) |
+
 ## 📊 Qué muestra
 
 - **Resumen general**: total de TRF, impresoras, radios, balizas y celulares.
 - **Gráficos interactivos** (carrusel):
   - Distribución por área (Peto, Lata, Jugos/Barriles, Casa Piedra).
   - Resumen de equipos por uso (Picking, Backup, Libre Uso).
-- **Páginas de detalle** (`page2.html`, `page3.html`) con la fecha de actualización.
+- **Tablas de equipos** con búsqueda por código TRF o número de serie:
+  - TRF Zebra 330L · TRF Zebra MC3300 · TRF Zebra MC3400 · Impresoras ZQ360 Plus
+- **Baterías**: cálculo por tipo de equipo.
+- **Páginas de detalle** (`page2.html`, `page3.html`, `page4.html`, `pasos.html`).
 
 ## 🛠️ Tecnologías
 

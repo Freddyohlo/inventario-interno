@@ -1,336 +1,1262 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Levantamiento de Inventario</title>
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Iconos de Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-
-    /* Tarjetas */
-    .card {
-      border-radius: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    /* Efecto hover (zoom + flotación) */
-    .card:hover {
-      transform: scale(1.08) translateY(-8px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
-      z-index: 5;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    /* Estilos especiales para nuevas tarjetas */
-    .card-lab {
-      background: #e8f1ff; /* azul claro */
-      border-left: 5px solid #0d6efd;
-    }
-
-    .card-detalle {
-      background: #fffbea; /* amarillo muy claro */
-      border-left: 5px solid #ffc107;
-    }
-
-    /* Estilos para el carrusel */
-    .carousel-control-prev,
-    .carousel-control-next {
-      width: 5%;
-    }
-
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-      background-color: rgba(0,0,0,0.5);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-    }
-
-    .carousel-indicators {
-      margin-bottom: -50px;
-    }
-
-    .carousel-indicators button {
-      background-color: #0d6efd;
-    }
-  </style>
-</head>
-<body>
-  <div class="container py-4">
-    <!-- Título -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fw-bold">Levantamiento de Inventario</h4>
-      <a href="page3.html" class="text-primary fw-bold text-decoration-none">Fecha actualización: 23-09-2025</a>
-    </div>
-
-    <!-- Resumen rápido -->
-    <div class="row g-3 mb-4">
-      <div class="col">
-        <div class="card p-3 text-center">
-          <h6 class="card-title">Total TRF</h6>
-          <h3 class="text-primary">132</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">50 equipos picking, 10 backup y 72 libre uso</p>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Levantamiento de Inventario</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      /* Tarjetas */
+      .card {
+        border-radius: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      /* Efecto hover (zoom + flotación) */
+      .card:hover {
+        transform: scale(1.08) translateY(-8px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        z-index: 5;
+      }
+      .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      /* Estilos especiales para nuevas tarjetas */
+      .card-lab {
+        background: #e8f1ff; /* azul claro */
+        border-left: 5px solid #0d6efd;
+      }
+      .card-detalle {
+        background: #fffbea; /* amarillo muy claro */
+        border-left: 5px solid #ffc107;
+      }
+      /* Estilos para el carrusel */
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 5%;
+      }
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+      }
+      .carousel-indicators {
+        margin-bottom: -50px;
+      }
+      .carousel-indicators button {
+        background-color: #0d6efd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <h4 class="fw-bold mb-0">Levantamiento de Inventario</h4>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+          <a
+            href="page3.html"
+            class="text-primary fw-semibold text-decoration-none"
+            id="fechaActualizacion"
+            style="font-size: 0.85rem; white-space: nowrap;"
+            >Fecha última actualización: 03-08-2026</a
+            >
+          <a
+            href="page4.html"
+            class="btn btn-sm btn-outline-danger fw-semibold"
+            style="white-space: nowrap;"
+          >
+            <i class="bi bi-tools me-1"></i>Historial de Reparaciones
+          </a>
         </div>
       </div>
+      <div class="row g-3 mb-4">
+        <div class="col">
+          <div class="card p-3 text-center">
+            <h6 class="card-title">Total TRF</h6>
+            <h3 class="text-primary" id="totalTrf">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="totalTrfDetalle"
+            >
+              ...
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card p-3 text-center">
+            <h6 class="card-title">Impresoras</h6>
+            <h3 class="text-info" id="impresoras">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="impresorasDetalle"
+            >
+              ...
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card p-3 text-center">
+            <h6 class="card-title">Total Radios</h6>
+            <h3 class="text-success" id="totalRadios">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="totalRadiosDetalle"
+            >
+              ...
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card p-3 text-center">
+            <h6 class="card-title">Total Balizas</h6>
+            <h3 class="text-danger" id="totalBalizas">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="totalBalizasDetalle"
+            >
+              ...
+            </p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card p-3 text-center">
+            <h6 class="card-title">Celulares Integrate</h6>
+            <h3 class="text-warning" id="celulares">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="celularesDetalle"
+            >
+              ...
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        id="graficosCarousel"
+        class="carousel slide"
+        data-bs-ride="carousel"
+        data-bs-interval="5000"
+      >
+        <div class="carousel-indicators">
+          <button
+            type="button"
+            data-bs-target="#graficosCarousel"
+            data-bs-slide-to="0"
+            class="active"
+            aria-current="true"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#graficosCarousel"
+            data-bs-slide-to="1"
+            aria-label="Slide 2"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#graficosCarousel"
+            data-bs-slide-to="2"
+            aria-label="Slide 3"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="row g-3 justify-content-center">
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Distribución por Área
+                  </h6>
+                  <div
+                    class="d-flex justify-content-center align-items-center"
+                    style="height: 300px"
+                  >
+                    <canvas id="areaChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Resumen de Equipos de Picking
+                  </h6>
+                  <div
+                    class="d-flex justify-content-center align-items-center"
+                    style="height: 300px"
+                  >
+                    <canvas id="equiposChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="row g-3 justify-content-center">
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Resumen de Equipos de Picking
+                  </h6>
+                  <div
+                    class="d-flex justify-content-center align-items-center"
+                    style="height: 300px"
+                  >
+                    <canvas id="equiposChart2"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Resumen de Baterías
+                  </h6>
+                  <div
+                    class="d-flex flex-column justify-content-center"
+                    style="height: 300px"
+                  >
+                    <ul class="list-group list-group-flush" id="bateriasList">
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías TRF
+                        <span
+                          class="badge bg-primary rounded-pill"
+                          id="bateriasTrf"
+                          >0 unid.</span
+                        >
+                      </li>
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías Impresoras
+                        <span
+                          class="badge bg-success rounded-pill"
+                          id="bateriasImpresoras"
+                          >0 unid.</span
+                        >
+                      </li>
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías Radios
+                        <span
+                          class="badge bg-warning text-dark rounded-pill"
+                          id="bateriasRadios"
+                          >0 unid.</span
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="row g-3 justify-content-center">
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Resumen de Baterías
+                  </h6>
+                  <div
+                    class="d-flex flex-column justify-content-center"
+                    style="height: 300px"
+                  >
+                    <ul class="list-group list-group-flush" id="bateriasList2">
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías TRF
+                        <span
+                          class="badge bg-primary rounded-pill"
+                          id="bateriasTrf2"
+                          >0 unid.</span
+                        >
+                      </li>
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías Impresoras
+                        <span
+                          class="badge bg-success rounded-pill"
+                          id="bateriasImpresoras2"
+                          >0 unid.</span
+                        >
+                      </li>
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        Baterías Radios
+                        <span
+                          class="badge bg-warning text-dark rounded-pill"
+                          id="bateriasRadios2"
+                          >0 unid.</span
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card p-3" style="height: 400px">
+                  <h6 class="card-title mb-3 text-center">
+                    Distribución por Área
+                  </h6>
+                  <div
+                    class="d-flex justify-content-center align-items-center"
+                    style="height: 300px"
+                  >
+                    <canvas id="areaChart2"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#graficosCarousel"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#graficosCarousel"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+      </div>
+      <div class="row g-3 mt-4">
+        <div class="col-md-6">
+          <div class="card p-3 text-center">
+            <img
+              src="Image/s-l300.jpg"
+              class="mx-auto mb-2"
+              alt="Zebra 330L"
+              style="width: 120px; height: 120px; object-fit: contain"
+            />
+            <h6 class="card-title">
+              <button
+                type="button"
+                class="btn btn-link p-0 fw-semibold text-decoration-none"
+                style="color: inherit; font-size: inherit; line-height: inherit;"
+                data-bs-toggle="modal"
+                data-bs-target="#trf330lModal"
+                onclick="event.stopPropagation()"
+              >
+                TRF Zebra 330L
+                <i class="bi bi-table ms-1" style="font-size: 0.85rem; color: #0d6efd;"></i>
+              </button>
+            </h6>
+            <h3 class="text-primary">81</h3>
+            <p class="mb-0">Equipos totales</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3 text-center">
+            <img
+              src="Image/MC3300SERIES.jpg"
+              class="mx-auto mb-2"
+              alt="Zebra MC3300"
+              style="width: 120px; height: 120px; object-fit: contain"
+            />
+            <h6 class="card-title">
+              <button
+                type="button"
+                class="btn btn-link p-0 fw-semibold text-decoration-none"
+                style="color: inherit; font-size: inherit; line-height: inherit;"
+                data-bs-toggle="modal"
+                data-bs-target="#trfMc3300Modal"
+                onclick="event.stopPropagation()"
+              >
+                TRF Zebra MC3300
+                <i class="bi bi-table ms-1" style="font-size: 0.85rem; color: #ea580c;"></i>
+              </button>
+            </h6>
+            <h3 class="text-primary">16</h3>
+            <p class="mb-0">Equipos disponibles</p>
+          </div>
+        </div>
 
-      <div class="col">
-        <div class="card p-3 text-center">
-          <h6 class="card-title">Impresoras</h6>
+        <div class="col-md-6">
+          <div class="card p-3 text-center">
+            <img
+              src="Image/MC3400.jpg"
+              class="mx-auto mb-2"
+              alt="Zebra MC3400"
+              style="width: 120px; height: 120px; object-fit: contain"
+            />
+            <h6 class="card-title">
+              <button
+                type="button"
+                class="btn btn-link p-0 fw-semibold text-decoration-none"
+                style="color: inherit; font-size: inherit; line-height: inherit;"
+                data-bs-toggle="modal"
+                data-bs-target="#trfMc3400Modal"
+                onclick="event.stopPropagation()"
+              >
+                TRF Zebra MC3400
+                <i class="bi bi-table ms-1" style="font-size: 0.85rem; color: #0d6efd;"></i>
+              </button>
+            </h6>
+            <h3 class="text-primary">20</h3>
+            <p class="mb-0">Equipos disponibles</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card p-3 text-center">
+          <img
+            src="Image/Impresora.JPG"
+            class="mx-auto mb-2"
+            alt="Impresora"
+            style="width: 120px; height: 120px; object-fit: contain"
+          />
+          <h6 class="card-title">
+            <button
+              type="button"
+              class="btn btn-link p-0 fw-semibold text-decoration-none"
+              style="color: inherit; font-size: inherit; line-height: inherit;"
+              data-bs-toggle="modal"
+              data-bs-target="#trfZq360Modal"
+              onclick="event.stopPropagation()"
+            >
+              Impresoras ZQ360 Plus
+              <i class="bi bi-table ms-1" style="font-size: 0.85rem; color: #7c3aed;"></i>
+            </button>
+          </h6>
           <h3 class="text-info">60</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">50 corresponden a picking y 10 a backup, todas operativas</p>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card p-3 text-center">
-          <h6 class="card-title">Total Radios</h6> 
-          <h3 class="text-success">65</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">50 disponibles, 5 defectuosos, 5 no regresan y 5 fijos</p>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card p-3 text-center">
-          <h6 class="card-title">Total Balizas</h6> 
-          <h3 class="text-danger">45</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">18 equipos funcionando para la operación actual</p> 
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="card p-3 text-center">
-          <h6 class="card-title">Celulares Integrate</h6> 
-          <h3 class="text-warning">5</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">Equipos operativos, 1 equipo se encuentra con trizadura</p>
-        </div>
-      </div>
-    </div>
-
-
-    
-    <!-- Carrusel de Gráficas -->
-    <div id="graficosCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#graficosCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#graficosCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#graficosCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-      </div>
-      
-      <div class="carousel-inner">
-        <!-- Slide 1: Gráfico 1 y 2 (Distribución + Equipos) -->
-        <div class="carousel-item active">
-          <div class="row g-3 justify-content-center">
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Distribución por Área</h6>
-                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                  <canvas id="areaChart"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Resumen de Equipos de Picking</h6>
-                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                  <canvas id="equiposChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Slide 2: Gráfico 2 y 3 (Equipos + Baterías) -->
-        <div class="carousel-item">
-          <div class="row g-3 justify-content-center">
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Resumen de Equipos de Picking</h6>
-                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                  <canvas id="equiposChart2"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Resumen de Baterías</h6>
-                <div class="d-flex flex-column justify-content-center" style="height: 300px;">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías TRF
-                      <span class="badge bg-primary rounded-pill">272 unid. - 1,9 x equipo</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías Impresoras
-                      <span class="badge bg-success rounded-pill">115 unid. - 1,9 x equipo</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías Radios
-                      <span class="badge bg-warning text-dark rounded-pill">77 unid. - 1,2 x equipo</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Slide 3: Gráfico 3 y 1 (Baterías + Distribución) -->
-        <div class="carousel-item">
-          <div class="row g-3 justify-content-center">
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Resumen de Baterías</h6>
-                <div class="d-flex flex-column justify-content-center" style="height: 300px;">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías TRF
-                      <span class="badge bg-primary rounded-pill">272 unid. - 1,9 x equipo</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías Impresoras
-                      <span class="badge bg-success rounded-pill">115 unid. - 1,9 x equipo</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      Baterías Radios
-                      <span class="badge bg-warning text-dark rounded-pill">77 unid. - 1,2 x equipo</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="card p-3" style="height: 400px;">
-                <h6 class="card-title mb-3 text-center">Distribución por Área</h6>
-                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                  <canvas id="areaChart2"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Controles del carrusel -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#graficosCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#graficosCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-      </button>
-    </div>
-
-
-
-
-
-
-    <!-- Equipos -->
-    <div class="row g-3 mt-4">
-      <div class="col-md-6">
-        <div class="card p-3 text-center">
-          <img src="Image/s-l300.jpg" class="mx-auto mb-2" alt="Zebra 330L" style="width: 120px; height: 120px; object-fit: contain;">
-          <h6 class="card-title">TRF Zebra 330L</h6>
-          <h3 class="text-primary">100</h3>
-          <p class="mb-0">Equipos totales</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card p-3 text-center">
-          <img src="Image/MC3300SERIES.jpg" class="mx-auto mb-2" alt="Zebra MC3300" style="width: 120px; height: 120px; object-fit: contain;">
-          <h6 class="card-title">TRF Zebra MC3300</h6>
-          <h3 class="text-primary">32</h3>
           <p class="mb-0">Equipos disponibles</p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="card p-3 text-center">
-          <img src="Image/Impresora.JPG" class="mx-auto mb-2" alt="Impresora" style="width: 120px; height: 120px; object-fit: contain;">
-          <h6 class="card-title">Impresoras ZQ360 Plus</h6>
-          <h3 class="text-info">60</h3>
-          <p class="mb-0">Equipos disponibles</p>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card p-3 text-center">
-          <img src="Image/Radio_DEP250.JPG" class="mx-auto mb-2" alt="Radio DEP250" style="width: 120px; height: 120px; object-fit: contain;">
+          <img
+            src="Image/Radio_DEP250.JPG"
+            class="mx-auto mb-2"
+            alt="Radio DEP250"
+            style="width: 120px; height: 120px; object-fit: contain"
+          />
           <h6 class="card-title">Radios DEP250</h6>
-          <h3 class="text-success">65</h3>
+          <h3 class="text-success">51</h3>
           <p class="mb-0">Equipos disponibles</p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="card p-3 text-center">
-          <img src="Image/Baliza.jpg" class="mx-auto mb-2" alt="Baliza" style="width: 120px; height: 120px; object-fit: contain;">
+          <img
+            src="Image/Baliza.jpg"
+            class="mx-auto mb-2"
+            alt="Baliza"
+            style="width: 120px; height: 120px; object-fit: contain"
+          />
           <h6 class="card-title">Balizas</h6>
-          <h3 class="text-danger">45</h3>
+          <h3 class="text-danger">24</h3>
           <p class="mb-0">Equipos disponibles</p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="card p-3 text-center">
-          <img src="Image/Celular.jpg" class="mx-auto mb-2" alt="Celular Integrate" style="width: 120px; height: 120px; object-fit: contain;">
+          <img
+            src="Image/Celular.jpg"
+            class="mx-auto mb-2"
+            alt="Celular Integrate"
+            style="width: 120px; height: 120px; object-fit: contain"
+          />
           <h6 class="card-title">Celulares Integrate</h6>
           <h3 class="text-warning">5</h3>
           <p class="mb-0">Equipos disponibles</p>
         </div>
       </div>
+
+      <div class="col-md-6">
+        <div class="card p-3 text-center">
+          <img
+            src="Image/Celular1.jpg"
+            class="mx-auto mb-2"
+            alt="Celular Merma"
+            style="width: 120px; height: 120px; object-fit: contain"
+          />
+          <h6 class="card-title">Celular Merma</h6>
+          <h3 class="text-warning">1</h3>
+          <p class="mb-0">Equipos disponibles</p>
+        </div>
+      </div>
+
+
     </div>
 
-
-
-
-
-
-
-
-
-    <!-- Nuevos ítems al final -->
     <div class="row g-3 mt-4">
       <div class="col-md-6">
-        <div class="card card-detalle p-3 text-center" style="cursor: pointer;" onclick="location.href='page2.html?tipo=laboratorio'">
-          <i class="bi bi-flask text-primary" style="font-size: 2rem;"></i>
-          <h6 class="card-title mt-2">Equipos en Laboratorio</h6> 
-          <h3 class="text-primary">0</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">No hay equipos en STG</p>
-        </div>
+        <a href="page2.html?tipo=laboratorio" class="text-decoration-none">
+          <div class="card card-lab p-3 text-center">
+            <i class="bi bi-flask text-primary" style="font-size: 2rem"></i>
+            <h6 class="card-title mt-2">Equipos en Laboratorio</h6>
+            <h3 class="text-primary" id="equiposLab">0</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="equiposLabDetalle"
+            >
+              No hay equipos en STG
+            </p>
+          </div>
+        </a>
       </div>
-      
       <div class="col-md-6">
-        <div class="card card-detalle p-3 text-center" style="cursor: pointer;" onclick="location.href='page2.html?tipo=detalle'">
-          <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-          <h6 class="card-title mt-2">Equipos con Detalle</h6> 
-          <h3 class="text-warning">2</h3>
-          <p class="text-muted mb-0" style="font-size: 0.8rem;">
-            TRF, 47 y Cel3 con trizaduras de pantalla
-          </p>
+        <a href="page2.html?tipo=detalle" class="text-decoration-none">
+          <div class="card card-detalle p-3 text-center">
+            <i
+              class="bi bi-exclamation-triangle text-warning"
+              style="font-size: 2rem"
+            ></i>
+            <h6 class="card-title mt-2">Equipos con Detalle</h6>
+            <h3 class="text-warning" id="equiposDetalle">1</h3>
+            <p
+              class="text-muted mb-0"
+              style="font-size: 0.8rem"
+              id="equiposDetalleDetalle"
+            >
+              Cel3 con trizadura de pantalla
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-5 mb-3 text-center">
+      <h4
+        class="fw-bold text-dark"
+        style="
+          border-bottom: 3px solid #198754;
+          display: inline-block;
+          padding-bottom: 8px;
+        "
+      >
+        Residente CD8000
+      </h4>
+    </div>
+
+    <div class="row g-3 mt-3">
+      <div class="col-md-4">
+        <a href="pasos.html" class="text-decoration-none">
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+              border-left: 5px solid #0284c7;
+            "
+          >
+            <i class="bi bi-gear-fill text-info" style="font-size: 2rem"></i>
+            <h6 class="card-title mt-2">Configuración de TRF</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Pasos detallados con imágenes
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a
+          href="pasos.html?modulo=configuracion-impresora"
+          class="text-decoration-none"
+        >
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+              border-left: 5px solid #2563eb;
+            "
+          >
+            <i
+              class="bi bi-printer-fill text-primary"
+              style="font-size: 2rem"
+            ></i>
+            <h6 class="card-title mt-2">Configuración de Impresora</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Configuración de impresoras ZQ360
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="pasos.html?modulo=reseteo-trf" class="text-decoration-none">
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+              border-left: 5px solid #f59e0b;
+            "
+          >
+            <i
+              class="bi bi-arrow-clockwise text-warning"
+              style="font-size: 2rem"
+            ></i>
+            <h6 class="card-title mt-2">Reseteo TRF</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Restaurar TRF a valores de fábrica
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a
+          href="pasos.html?modulo=reseteo-impresora"
+          class="text-decoration-none"
+        >
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+              border-left: 5px solid #ea580c;
+            "
+          >
+            <i
+              class="bi bi-arrow-repeat text-danger"
+              style="font-size: 2rem"
+            ></i>
+            <h6 class="card-title mt-2">Reseteo Impresora</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Restaurar impresora a configuración inicial
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="pasos.html?modulo=pasillos" class="text-decoration-none">
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+              border-left: 5px solid #059669;
+            "
+          >
+            <i
+              class="bi bi-signpost-split-fill text-success"
+              style="font-size: 2rem"
+            ></i>
+            <h6 class="card-title mt-2">Pasillos</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Navegación y ubicación en CD8000
+            </p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a
+          href="pasos.html?modulo=impresion-vales"
+          class="text-decoration-none"
+        >
+          <div
+            class="card p-3 text-center"
+            style="
+              background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+              border-left: 5px solid #9333ea;
+            "
+          >
+            <i
+              class="bi bi-receipt text-purple"
+              style="font-size: 2rem; color: #9333ea"
+            ></i>
+            <h6 class="card-title mt-2">Impresión de Vales</h6>
+            <p class="text-muted mb-0" style="font-size: 0.8rem">
+              Proceso de impresión de documentos
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- Modal Impresoras ZQ360 Plus -->
+    <div class="modal fade" id="trfZq360Modal" tabindex="-1" aria-labelledby="trfZq360ModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
+
+          <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #3b0764 0%, #7c3aed 100%); color: white;">
+            <div class="py-1">
+              <h5 class="modal-title fw-bold mb-0" id="trfZq360ModalLabel">
+                <i class="bi bi-printer-fill me-2"></i>Impresoras ZQ360 Plus &mdash; Registro de Equipos
+              </h5>
+              <p class="mb-0 mt-1" style="opacity: 0.8; font-size: 0.83rem;">60 equipos registrados</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="px-3 pt-3 pb-1" style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text border-end-0 bg-white" style="border-color: #d1d5db;">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="zq360Search" class="form-control border-start-0"
+                placeholder="Buscar por C&#243;digo o N&#176; Serie..."
+                style="border-color: #d1d5db;"
+                oninput="filtrarZq360()"
+              />
+              <span class="input-group-text bg-white border-start-0 text-muted" id="zq360Count" style="border-color: #d1d5db; font-size: 0.8rem;">60 resultados</span>
+            </div>
+          </div>
+
+          <div class="modal-body p-0">
+            <table class="table table-hover mb-0" id="zq360Table">
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr style="background: #3b0764;">
+                  <th class="text-white fw-semibold" style="width: 50px; padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">#</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">C&#243;digo</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; Serie</th>
+                </tr>
+              </thead>
+              <tbody id="zq360Body"></tbody>
+            </table>
+            <div id="zq360NoResults" class="text-center py-5" style="display:none; color: #9ca3af;">
+              <i class="bi bi-search" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              <p class="mb-0 fw-semibold" style="color: #374151;">Sin resultados</p>
+              <p class="mb-0" style="font-size: 0.85rem;">No se encontr&#243; ninguna impresora con ese criterio.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 pt-2" style="background: #f8fafc;">
+            <span class="text-muted me-auto" style="font-size: 0.82rem;"><i class="bi bi-info-circle me-1"></i>Modelo Zebra ZQ360 Plus</span>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
         </div>
       </div>
-      
-
-
-
-
     </div>
-  </div>
 
-  <script src="script.js"></script>
-</body>
+    <!-- Modal TRF Zebra MC3300 -->
+    <div class="modal fade" id="trfMc3300Modal" tabindex="-1" aria-labelledby="trfMc3300ModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
+
+          <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #7c2d12 0%, #ea580c 100%); color: white;">
+            <div class="py-1">
+              <h5 class="modal-title fw-bold mb-0" id="trfMc3300ModalLabel">
+                <i class="bi bi-cpu-fill me-2"></i>TRF Zebra MC3300 &mdash; Registro de Equipos
+              </h5>
+              <p class="mb-0 mt-1" style="opacity: 0.8; font-size: 0.83rem;">16 equipos registrados</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="px-3 pt-3 pb-1" style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text border-end-0 bg-white" style="border-color: #d1d5db;">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="mc3300Search" class="form-control border-start-0"
+                placeholder="Buscar por N&#176; TRF o N&#176; Serie..."
+                style="border-color: #d1d5db;"
+                oninput="filtrarMc3300()"
+              />
+              <span class="input-group-text bg-white border-start-0 text-muted" id="mc3300Count" style="border-color: #d1d5db; font-size: 0.8rem;">16 resultados</span>
+            </div>
+          </div>
+
+          <div class="modal-body p-0">
+            <table class="table table-hover mb-0" id="mc3300Table">
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr style="background: #7c2d12;">
+                  <th class="text-white fw-semibold" style="width: 50px; padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">#</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; TRF</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; Serie</th>
+                </tr>
+              </thead>
+              <tbody id="mc3300Body"></tbody>
+            </table>
+            <div id="mc3300NoResults" class="text-center py-5" style="display:none; color: #9ca3af;">
+              <i class="bi bi-search" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              <p class="mb-0 fw-semibold" style="color: #374151;">Sin resultados</p>
+              <p class="mb-0" style="font-size: 0.85rem;">No se encontr&#243; ning&#250;n equipo con ese criterio.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 pt-2" style="background: #f8fafc;">
+            <span class="text-muted me-auto" style="font-size: 0.82rem;"><i class="bi bi-info-circle me-1"></i>Modelo Zebra MC3300</span>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal TRF Zebra MC3400 -->
+    <div class="modal fade" id="trfMc3400Modal" tabindex="-1" aria-labelledby="trfMc3400ModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
+
+          <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #14532d 0%, #16a34a 100%); color: white;">
+            <div class="py-1">
+              <h5 class="modal-title fw-bold mb-0" id="trfMc3400ModalLabel">
+                <i class="bi bi-cpu-fill me-2"></i>TRF Zebra MC3400 &mdash; Registro de Equipos
+              </h5>
+              <p class="mb-0 mt-1" style="opacity: 0.8; font-size: 0.83rem;">20 equipos registrados</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="px-3 pt-3 pb-1" style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text border-end-0 bg-white" style="border-color: #d1d5db;">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="mc3400Search" class="form-control border-start-0"
+                placeholder="Buscar por N&#176; TRF o N&#176; Serie..."
+                style="border-color: #d1d5db;"
+                oninput="filtrarMc3400()"
+              />
+              <span class="input-group-text bg-white border-start-0 text-muted" id="mc3400Count" style="border-color: #d1d5db; font-size: 0.8rem;">20 resultados</span>
+            </div>
+          </div>
+
+          <div class="modal-body p-0">
+            <table class="table table-hover mb-0" id="mc3400Table">
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr style="background: #14532d;">
+                  <th class="text-white fw-semibold" style="width: 50px; padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">#</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; TRF</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; Serie</th>
+                </tr>
+              </thead>
+              <tbody id="mc3400Body"></tbody>
+            </table>
+            <div id="mc3400NoResults" class="text-center py-5" style="display:none; color: #9ca3af;">
+              <i class="bi bi-search" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              <p class="mb-0 fw-semibold" style="color: #374151;">Sin resultados</p>
+              <p class="mb-0" style="font-size: 0.85rem;">No se encontr&#243; ning&#250;n equipo con ese criterio.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 pt-2" style="background: #f8fafc;">
+            <span class="text-muted me-auto" style="font-size: 0.82rem;"><i class="bi bi-info-circle me-1"></i>Modelo Zebra MC3400</span>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal TRF Zebra 330L -->
+    <div class="modal fade" id="trf330lModal" tabindex="-1" aria-labelledby="trf330lModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 14px; overflow: hidden; border: none;">
+
+          <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); color: white;">
+            <div class="py-1">
+              <h5 class="modal-title fw-bold mb-0" id="trf330lModalLabel">
+                <i class="bi bi-cpu-fill me-2"></i>TRF Zebra 330L — Registro de Equipos
+              </h5>
+              <p class="mb-0 mt-1" style="opacity: 0.8; font-size: 0.83rem;">81 equipos registrados</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="px-3 pt-3 pb-1" style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text border-end-0 bg-white" style="border-color: #d1d5db;">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="trf330lSearch" class="form-control border-start-0"
+                placeholder="Buscar por N&#176; TRF o N&#176; Serie..."
+                style="border-color: #d1d5db;"
+                oninput="filtrarTrf330l()"
+              />
+              <span class="input-group-text bg-white border-start-0 text-muted" id="trf330lCount" style="border-color: #d1d5db; font-size: 0.8rem;">81 resultados</span>
+            </div>
+          </div>
+
+          <div class="modal-body p-0">
+            <table class="table table-hover mb-0" id="trf330lTable">
+              <thead style="position: sticky; top: 0; z-index: 1;">
+                <tr style="background: #1e3a5f;">
+                  <th class="text-white fw-semibold" style="width: 50px; padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">#</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; TRF</th>
+                  <th class="text-white fw-semibold" style="padding: 0.75rem 1rem; font-size: 0.78rem; letter-spacing: 0.4px; text-transform: uppercase; border: none;">N&#176; Serie</th>
+                </tr>
+              </thead>
+              <tbody id="trf330lBody">
+              </tbody>
+            </table>
+            <div id="trf330lNoResults" class="text-center py-5" style="display:none; color: #9ca3af;">
+              <i class="bi bi-search" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              <p class="mb-0 fw-semibold" style="color: #374151;">Sin resultados</p>
+              <p class="mb-0" style="font-size: 0.85rem;">No se encontr&#243; ning&#250;n equipo con ese criterio.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer border-0 pt-2" style="background: #f8fafc;">
+            <span class="text-muted me-auto" style="font-size: 0.82rem;"><i class="bi bi-info-circle me-1"></i>Modelo Zebra TC52 / 330L</span>
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const trf330lData = [
+        { trf: "T01",  serie: "23178520100380" },
+        { trf: "T02",  serie: "22256520100401" },
+        { trf: "T03",  serie: "22256520100657" },
+        { trf: "T04",  serie: "22253520101252" },
+        { trf: "T05",  serie: "22256520100862" },
+        { trf: "T06",  serie: "23177520100571" },
+        { trf: "T07",  serie: "22256520100358" },
+        { trf: "T08",  serie: "24164525101498" },
+        { trf: "T09",  serie: "22248520100194" },
+        { trf: "T10",  serie: "22242520100314" },
+        { trf: "T11",  serie: "22255520100436" },
+        { trf: "T12",  serie: "23178520100725" },
+        { trf: "T13",  serie: "23178520100722" },
+        { trf: "T14",  serie: "24164525101500" },
+        { trf: "T15",  serie: "22255520100361" },
+        { trf: "T16",  serie: "22255521001402" },
+        { trf: "T17",  serie: "25043525100618" },
+        { trf: "T18",  serie: "24164525101308" },
+        { trf: "T19",  serie: "23181520101069" },
+        { trf: "T20",  serie: "24164525101268" },
+        { trf: "T21",  serie: "22253520101400" },
+        { trf: "T22",  serie: "23178520100418" },
+        { trf: "T23",  serie: "22257520100031" },
+        { trf: "T24",  serie: "23177520100754" },
+        { trf: "T25",  serie: "24164525101519" },
+        { trf: "T26",  serie: "23177520100540" },
+        { trf: "T27",  serie: "22256520102513" },
+        { trf: "T28",  serie: "24164525101478" },
+        { trf: "T29",  serie: "22256520100105" },
+        { trf: "T30",  serie: "23178520100726" },
+        { trf: "T31",  serie: "22256520102479" },
+        { trf: "T32",  serie: "23177520100777" },
+        { trf: "T33",  serie: "23177520100761" },
+        { trf: "T34",  serie: "23177520100734" },
+        { trf: "T35",  serie: "24164525101408" },
+        { trf: "T36",  serie: "22256520100881" },
+        { trf: "T37",  serie: "22255520102707" },
+        { trf: "T38",  serie: "22256520100861" },
+        { trf: "T39",  serie: "24164525101505" },
+        { trf: "T40",  serie: "22256520100838" },
+        { trf: "T41",  serie: "22255520102622" },
+        { trf: "T42",  serie: "22257520100558" },
+        { trf: "T43",  serie: "23177520100735" },
+        { trf: "T44",  serie: "23177520100749" },
+        { trf: "T45",  serie: "22255520100402" },
+        { trf: "T46",  serie: "22255520102580" },
+        { trf: "T47",  serie: "22246520102674" },
+        { trf: "T48",  serie: "22256520100857" },
+        { trf: "T49",  serie: "22255520102708" },
+        { trf: "T50",  serie: "22255520100478" },
+        { trf: "T56",  serie: "22080520100291" },
+        { trf: "T62",  serie: "24346525100781" },
+        { trf: "T63",  serie: "22080520100469" },
+        { trf: "T68",  serie: "22080520100381" },
+        { trf: "T69",  serie: "22080520100306" },
+        { trf: "T72",  serie: "22080520100767" },
+        { trf: "T73",  serie: "22041520101848" },
+        { trf: "T74",  serie: "22080520100791" },
+        { trf: "T76",  serie: "22080520100704" },
+        { trf: "T77",  serie: "22080520100346" },
+        { trf: "T85",  serie: "22080520100420" },
+        { trf: "T86",  serie: "22080520100222" },
+        { trf: "T90",  serie: "22080520100577" },
+        { trf: "T91",  serie: "22080520100777" },
+        { trf: "T92",  serie: "22080520100289" },
+        { trf: "T95",  serie: "22080520100747" },
+        { trf: "T96",  serie: "25043525100632" },
+        { trf: "T97",  serie: "22066520100967" },
+        { trf: "T99",  serie: "24345525101209" },
+        { trf: "T102", serie: "21230520100120" },
+        { trf: "T103", serie: "21230520100060" },
+        { trf: "T105", serie: "21229520101475" },
+        { trf: "T106", serie: "21229520101489" },
+        { trf: "T107", serie: "21230520100053" },
+        { trf: "T108", serie: "20325520101153" },
+        { trf: "T109", serie: "21230520100001" },
+        { trf: "T110", serie: "21230520100071" },
+        { trf: "T111", serie: "22066520100928" },
+        { trf: "T112", serie: "22080520100308" },
+        { trf: "T113", serie: "22080520100755" },
+        { trf: "T116", serie: "22080520100710" }
+      ];
+
+      function renderTrf330l(datos) {
+        const tbody = document.getElementById('trf330lBody');
+        const noResults = document.getElementById('trf330lNoResults');
+        const countEl = document.getElementById('trf330lCount');
+        if (datos.length === 0) {
+          tbody.innerHTML = '';
+          noResults.style.display = 'block';
+          countEl.textContent = '0 resultados';
+          return;
+        }
+        noResults.style.display = 'none';
+        countEl.textContent = datos.length + ' resultado' + (datos.length !== 1 ? 's' : '');
+        tbody.innerHTML = datos.map((r, i) => {
+          const isEven = i % 2 === 0;
+          const bg = isEven ? '#ffffff' : '#f8fafc';
+          return `
+            <tr style="background: ${bg};">
+              <td style="padding: 0.65rem 1rem; font-size: 0.8rem; color: #9ca3af; font-weight: 600; border-color: #f3f4f6;">${i + 1}</td>
+              <td style="padding: 0.65rem 1rem; border-color: #f3f4f6;">
+                <span style="display:inline-block; padding: 0.28rem 0.65rem; border-radius: 6px; background: #eff6ff; color: #1e40af; font-size: 0.82rem; font-weight: 700; border: 1px solid #bfdbfe; letter-spacing: 0.3px;">${r.trf}</span>
+              </td>
+              <td style="padding: 0.65rem 1rem; font-size: 0.88rem; color: #374151; font-family: 'Courier New', monospace; letter-spacing: 0.5px; border-color: #f3f4f6;">${r.serie}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function filtrarTrf330l() {
+        const q = document.getElementById('trf330lSearch').value.toLowerCase().trim();
+        const filtrados = q
+          ? trf330lData.filter(r => r.trf.toLowerCase().includes(q) || r.serie.includes(q))
+          : trf330lData;
+        renderTrf330l(filtrados);
+      }
+
+      const zq360Data = [
+        { trf: "I01",  serie: "XXZVN241900204" },
+        { trf: "I02",  serie: "XXZVN241900209" },
+        { trf: "I03",  serie: "XXZVN241900208" },
+        { trf: "I04",  serie: "XXZVN241900205" },
+        { trf: "I05",  serie: "XXZVN241900197" },
+        { trf: "I06",  serie: "XXZVN241900207" },
+        { trf: "I07",  serie: "XXZVN241900206" },
+        { trf: "I08",  serie: "XXZVN241900210" },
+        { trf: "I09",  serie: "XXZVN241900212" },
+        { trf: "I10",  serie: "XXZVN241900202" },
+        { trf: "I11",  serie: "XXZVN241800886" },
+        { trf: "I12",  serie: "XXZVN241900125" },
+        { trf: "I13",  serie: "XXZVN241900108" },
+        { trf: "I14",  serie: "XXZVN241900106" },
+        { trf: "I15",  serie: "XXZVN241900112" },
+        { trf: "I16",  serie: "XXZVN241800906" },
+        { trf: "I17",  serie: "XXZVN241800883" },
+        { trf: "I18",  serie: "XXZVN241900109" },
+        { trf: "I19",  serie: "XXZVN241900110" },
+        { trf: "I20",  serie: "XXZVN241900107" },
+        { trf: "I21",  serie: "XXZVN241900193" },
+        { trf: "I22",  serie: "XXZVN241900195" },
+        { trf: "I23",  serie: "XXZVN241900190" },
+        { trf: "I24",  serie: "XXZVN241900201" },
+        { trf: "I25",  serie: "XXZVN241900199" },
+        { trf: "I26",  serie: "XXZVN241900194" },
+        { trf: "I27",  serie: "XXZVN241900146" },
+        { trf: "I28",  serie: "XXZVN241900145" },
+        { trf: "I29 - (I61)",  serie: "XXZVN251302026" },
+        { trf: "I30",  serie: "XXZVN241900203" },
+        { trf: "I31",  serie: "XXZVN241900111" },
+        { trf: "I32",  serie: "XXZVN241900115" },
+        { trf: "I33",  serie: "XXZVN241900113" },
+        { trf: "I34",  serie: "XXZVN241900119" },
+        { trf: "I35",  serie: "XXZVN241900144" },
+        { trf: "I36",  serie: "XXZVN241900116" },
+        { trf: "I37",  serie: "XXZVN241900118" },
+        { trf: "I38",  serie: "XXZVN241900117" },
+        { trf: "I39",  serie: "XXZVN241900114" },
+        { trf: "I40",  serie: "XXZVN241900121" },
+        { trf: "I41 - (I62)",  serie: "XXZVN251302073" },
+        { trf: "I42",  serie: "XXZVN241900158" },
+        { trf: "I43",  serie: "XXZVN241900157" },
+        { trf: "I44",  serie: "XXZVN241900159" },
+        { trf: "I45",  serie: "XXZVN241900161" },
+        { trf: "I46",  serie: "XXZVN241900166" },
+        { trf: "I47",  serie: "XXZVN241900136" },
+        { trf: "I48",  serie: "XXZVN241900164" },
+        { trf: "I49",  serie: "XXZVN241900143" },
+        { trf: "I50",  serie: "XXZVN241900162" },
+        { trf: "I51",  serie: "XXZVN241900185" },
+        { trf: "I52",  serie: "XXZVN241900137" },
+        { trf: "I53",  serie: "XXZVN241900183" },
+        { trf: "I54",  serie: "XXZVN241900182" },
+        { trf: "I55",  serie: "XXZVN241900150" },
+        { trf: "B20",  serie: "XXZLN222000143" },
+        { trf: "B21",  serie: "XXZLN222000087" },
+        { trf: "B22",  serie: "XXZLN222000139" },
+        { trf: "B23",  serie: "XXZLN221800181" },
+        { trf: "B24",  serie: "XXZLN221800185" }
+      ];
+
+      function renderZq360(datos) {
+        const tbody = document.getElementById('zq360Body');
+        const noResults = document.getElementById('zq360NoResults');
+        const countEl = document.getElementById('zq360Count');
+        if (datos.length === 0) {
+          tbody.innerHTML = '';
+          noResults.style.display = 'block';
+          countEl.textContent = '0 resultados';
+          return;
+        }
+        noResults.style.display = 'none';
+        countEl.textContent = datos.length + ' resultado' + (datos.length !== 1 ? 's' : '');
+        tbody.innerHTML = datos.map((r, i) => {
+          const bg = i % 2 === 0 ? '#ffffff' : '#faf5ff';
+          return `
+            <tr style="background: ${bg};">
+              <td style="padding: 0.65rem 1rem; font-size: 0.8rem; color: #9ca3af; font-weight: 600; border-color: #f3f4f6;">${i + 1}</td>
+              <td style="padding: 0.65rem 1rem; border-color: #f3f4f6;">
+                <span style="display:inline-block; padding: 0.28rem 0.65rem; border-radius: 6px; background: #f3e8ff; color: #7c3aed; font-size: 0.82rem; font-weight: 700; border: 1px solid #ddd6fe; letter-spacing: 0.3px;">${r.trf}</span>
+              </td>
+              <td style="padding: 0.65rem 1rem; font-size: 0.88rem; color: #374151; font-family: 'Courier New', monospace; letter-spacing: 0.5px; border-color: #f3f4f6;">${r.serie}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function filtrarZq360() {
+        const q = document.getElementById('zq360Search').value.toLowerCase().trim();
+        const filtrados = q
+          ? zq360Data.filter(r => r.trf.toLowerCase().includes(q) || r.serie.includes(q))
+          : zq360Data;
+        renderZq360(filtrados);
+      }
+
+      document.getElementById('trfZq360Modal').addEventListener('show.bs.modal', () => {
+        document.getElementById('zq360Search').value = '';
+        renderZq360(zq360Data);
+      });
+
+      const mc3300Data = [
+        { trf: "T51",  serie: "19272523021385" },
+        { trf: "T52",  serie: "19272523020102" },
+        { trf: "T53",  serie: "19273523020194" },
+        { trf: "T54",  serie: "19272523021380" },
+        { trf: "T55",  serie: "19272523021397" },
+        { trf: "T57",  serie: "19273523020062" },
+        { trf: "T58",  serie: "19273523020130" },
+        { trf: "T59",  serie: "19273523020025" },
+        { trf: "T60",  serie: "22080520100292" },
+        { trf: "T75",  serie: "19272523021423" },
+        { trf: "T82",  serie: "19272523021372" },
+        { trf: "T83",  serie: "19273523020003" },
+        { trf: "T98",  serie: "20079520101523" },
+        { trf: "T101", serie: "19272523021292" },
+        { trf: "T117", serie: "19273523020081" },
+        { trf: "T120", serie: "19272523021386" }
+      ];
+
+      function renderMc3300(datos) {
+        const tbody = document.getElementById('mc3300Body');
+        const noResults = document.getElementById('mc3300NoResults');
+        const countEl = document.getElementById('mc3300Count');
+        if (datos.length === 0) {
+          tbody.innerHTML = '';
+          noResults.style.display = 'block';
+          countEl.textContent = '0 resultados';
+          return;
+        }
+        noResults.style.display = 'none';
+        countEl.textContent = datos.length + ' resultado' + (datos.length !== 1 ? 's' : '');
+        tbody.innerHTML = datos.map((r, i) => {
+          const bg = i % 2 === 0 ? '#ffffff' : '#fff7ed';
+          return `
+            <tr style="background: ${bg};">
+              <td style="padding: 0.65rem 1rem; font-size: 0.8rem; color: #9ca3af; font-weight: 600; border-color: #f3f4f6;">${i + 1}</td>
+              <td style="padding: 0.65rem 1rem; border-color: #f3f4f6;">
+                <span style="display:inline-block; padding: 0.28rem 0.65rem; border-radius: 6px; background: #ffedd5; color: #c2410c; font-size: 0.82rem; font-weight: 700; border: 1px solid #fed7aa; letter-spacing: 0.3px;">${r.trf}</span>
+              </td>
+              <td style="padding: 0.65rem 1rem; font-size: 0.88rem; color: #374151; font-family: 'Courier New', monospace; letter-spacing: 0.5px; border-color: #f3f4f6;">${r.serie}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function filtrarMc3300() {
+        const q = document.getElementById('mc3300Search').value.toLowerCase().trim();
+        const filtrados = q
+          ? mc3300Data.filter(r => r.trf.toLowerCase().includes(q) || r.serie.includes(q))
+          : mc3300Data;
+        renderMc3300(filtrados);
+      }
+
+      document.getElementById('trfMc3300Modal').addEventListener('show.bs.modal', () => {
+        document.getElementById('mc3300Search').value = '';
+        renderMc3300(mc3300Data);
+      });
+
+      const mc3400Data = [
+        { trf: "T61",  serie: "26042525120130" },
+        { trf: "T64",  serie: "26042525120304" },
+        { trf: "T65",  serie: "26035525120076" },
+        { trf: "T66",  serie: "26042525120116" },
+        { trf: "T67",  serie: "26035525120066" },
+        { trf: "T70",  serie: "26041525120167" },
+        { trf: "T71",  serie: "26041525120331" },
+        { trf: "T78",  serie: "26041525120323" },
+        { trf: "T79",  serie: "26041525120309" },
+        { trf: "T80",  serie: "26041525120320" },
+        { trf: "T81",  serie: "26041525120294" },
+        { trf: "T84",  serie: "26041525120083" },
+        { trf: "T87",  serie: "26035525120075" },
+        { trf: "T88",  serie: "26041525120316" },
+        { trf: "T93",  serie: "26041525120310" },
+        { trf: "T94",  serie: "26041525120317" },
+        { trf: "T100", serie: "26041525120319" },
+        { trf: "T104", serie: "26041525120300" },
+        { trf: "T114", serie: "26041525120069" },
+        { trf: "T115", serie: "26041525120147" }
+      ];
+
+      function renderMc3400(datos) {
+        const tbody = document.getElementById('mc3400Body');
+        const noResults = document.getElementById('mc3400NoResults');
+        const countEl = document.getElementById('mc3400Count');
+        if (datos.length === 0) {
+          tbody.innerHTML = '';
+          noResults.style.display = 'block';
+          countEl.textContent = '0 resultados';
+          return;
+        }
+        noResults.style.display = 'none';
+        countEl.textContent = datos.length + ' resultado' + (datos.length !== 1 ? 's' : '');
+        tbody.innerHTML = datos.map((r, i) => {
+          const bg = i % 2 === 0 ? '#ffffff' : '#f0fdf4';
+          return `
+            <tr style="background: ${bg};">
+              <td style="padding: 0.65rem 1rem; font-size: 0.8rem; color: #9ca3af; font-weight: 600; border-color: #f3f4f6;">${i + 1}</td>
+              <td style="padding: 0.65rem 1rem; border-color: #f3f4f6;">
+                <span style="display:inline-block; padding: 0.28rem 0.65rem; border-radius: 6px; background: #dcfce7; color: #15803d; font-size: 0.82rem; font-weight: 700; border: 1px solid #bbf7d0; letter-spacing: 0.3px;">${r.trf}</span>
+              </td>
+              <td style="padding: 0.65rem 1rem; font-size: 0.88rem; color: #374151; font-family: 'Courier New', monospace; letter-spacing: 0.5px; border-color: #f3f4f6;">${r.serie}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function filtrarMc3400() {
+        const q = document.getElementById('mc3400Search').value.toLowerCase().trim();
+        const filtrados = q
+          ? mc3400Data.filter(r => r.trf.toLowerCase().includes(q) || r.serie.includes(q))
+          : mc3400Data;
+        renderMc3400(filtrados);
+      }
+
+      document.getElementById('trfMc3400Modal').addEventListener('show.bs.modal', () => {
+        document.getElementById('mc3400Search').value = '';
+        renderMc3400(mc3400Data);
+      });
+
+      document.getElementById('trf330lModal').addEventListener('show.bs.modal', () => {
+        document.getElementById('trf330lSearch').value = '';
+        renderTrf330l(trf330lData);
+      });
+    </script>
+
+    <script src="script.js"></script>
+  </body>
 </html>

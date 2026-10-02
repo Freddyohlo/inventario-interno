@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Reparaciones</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+      color: white;
+      padding: 2.5rem 0 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .page-header p {
+      opacity: 0.8;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .filter-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-card label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-select, .form-control {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.85rem;
+    }
+
+    .form-select:focus, .form-control:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .table {
+      margin: 0;
+    }
+
+    .table thead th {
+      background-color: #1e3a5f;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0.9rem 1rem;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .table tbody tr {
+      transition: background 0.15s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f0f7ff;
+    }
+
+    .table tbody td {
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      color: #374151;
+      border-color: #f3f4f6;
+      vertical-align: middle;
+    }
+
+    .badge-empresa {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-humannet {
+      background-color: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-saep {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+
+    .equipo-badge {
+      display: inline-block;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .equipo-trf {
+      background-color: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .equipo-imp {
+      background-color: #faf5ff;
+      color: #6b21a8;
+      border: 1px solid #e9d5ff;
+    }
+
+    .fecha-col {
+      font-weight: 500;
+      color: #1e3a5f;
+      white-space: nowrap;
+    }
+
+    .obs-col {
+      max-width: 320px;
+      color: #4b5563;
+      line-height: 1.45;
+    }
+
+    .usuario-col {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .row-number {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: #9ca3af;
+    }
+
+    .no-results i {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .results-info {
+      font-size: 0.85rem;
+      color: #6b7280;
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #f3f4f6;
+      background-color: #fafafa;
+    }
+
+    @media (max-width: 768px) {
+      .page-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .table-responsive {
+        font-size: 0.83rem;
+      }
+
+      .obs-col {
+        max-width: 200px;
+      }
+
+      .stats-bar {
+        gap: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-box-seam me-2"></i>Inventario
+      </a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="bi bi-house me-1"></i>Inicio
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <a href="index.html" class="text-white text-decoration-none opacity-75">
+          <i class="bi bi-arrow-left me-1"></i>Volver
+        </a>
+      </div>
+      <h1><i class="bi bi-tools me-2"></i>Historial de Reparaciones</h1>
+      <p>Registro de equipos enviados a reparación o mantención</p>
+      <div class="stats-bar">
+        <div class="stat-item" id="totalRegistros"><i class="bi bi-list-check me-1"></i>15 registros</div>
+        <div class="stat-item" id="statHumannet"><i class="bi bi-building me-1"></i>Human-net: 4</div>
+        <div class="stat-item" id="statSaep"><i class="bi bi-building me-1"></i>Saep: 11</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container pb-5">
+
+    <div class="filter-card">
+      <div class="row g-3 align-items-end">
+        <div class="col-sm-6 col-md-4">
+          <label for="filtroEmpresa">Empresa</label>
+          <select class="form-select" id="filtroEmpresa" onchange="aplicarFiltros()">
+            <option value="">Todas las empresas</option>
+            <option value="Human-net">Human-net</option>
+            <option value="Saep">Saep</option>
+          </select>
+        </div>
+        <div class="col-sm-6 col-md-4">
+          <label for="filtroTipo">Tipo de equipo</label>
+          <select class="form-select" id="filtroTipo" onchange="aplicarFiltros()">
+            <option value="">Todos los equipos</option>
+            <option value="TRF">TRF (T)</option>
+            <option value="Impresora">Impresora (I)</option>
+          </select>
+        </div>
+        <div class="col-sm-12 col-md-4">
+          <label for="filtroBusqueda">Buscar</label>
+          <div class="input-group">
+            <span class="input-group-text border-end-0 bg-white" style="border-radius: 8px 0 0 8px; border-color: #e5e7eb;">
+              <i class="bi bi-search text-muted" style="font-size: 0.85rem;"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" id="filtroBusqueda"
+              placeholder="Equipo, usuario, observación..." oninput="aplicarFiltros()"
+              style="border-radius: 0 8px 8px 0;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th style="width: 40px;">#</th>
+              <th>Fecha</th>
+              <th>Usuario</th>
+              <th>Equipo</th>
+              <th>Empresa</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="results-info" id="resultsInfo">
+        Mostrando 15 de 15 registros
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const reparaciones = [
+      { fecha: "07/08/2025", usuario: "Guelmacen",         equipo: "I29", empresa: "Human-net", observacion: "Caída al suelo de impresora provocando daños" },
+      { fecha: "06/10/2025", usuario: "Gachener Saint",    equipo: "T32", empresa: "Human-net", observacion: "Daños de operación con quiebre de estructura" },
+      { fecha: "23/10/2025", usuario: "Gachener Saint",    equipo: "T37", empresa: "Human-net", observacion: "Equipo con trizadura de mica, sin afectar funcionamiento ni estructura del equipo" },
+      { fecha: "25/10/2025", usuario: "Santiago Rodriguez",equipo: "T62", empresa: "Saep",      observacion: "Equipo con daños estructurales debido a golpe" },
+      { fecha: "19/11/2025", usuario: "Frishman Doza",     equipo: "T01", empresa: "Saep",      observacion: "Daño en teclado" },
+      { fecha: "19/11/2025", usuario: "Frishman Doza",     equipo: "T27", empresa: "Saep",      observacion: "Daño en teclado" },
+      { fecha: "19/11/2025", usuario: "Frishman Doza",     equipo: "T30", empresa: "Saep",      observacion: "Daño en teclado" },
+      { fecha: "21/11/2025", usuario: "Sebastian Pino",    equipo: "T17", empresa: "Saep",      observacion: "Daños en estructura" },
+      { fecha: "19/12/2025", usuario: "Franckel Massenat", equipo: "I19", empresa: "Saep",      observacion: "Derrame de líquido en equipo dejando inoperativa la impresora" },
+      { fecha: "22/12/2025", usuario: "Flavio Ramirez",    equipo: "T48", empresa: "Saep",      observacion: "Daño en estructura por mala manipulación del equipo" },
+      { fecha: "07/01/2026", usuario: "Flavio Ramirez",    equipo: "T04", empresa: "Saep",      observacion: "Daño en estructura por mala manipulación del equipo" },
+      { fecha: "19/03/2026", usuario: "Arry Gonzalez",     equipo: "T96", empresa: "Saep",      observacion: "Daños en estructura por mala manipulación" },
+      { fecha: "11/04/2026", usuario: "Louvens Derinvil",  equipo: "I27", empresa: "Human-net", observacion: "Daño en pantalla de impresora por golpe" },
+      { fecha: "25/06/2026", usuario: "Johan Rojas",       equipo: "I10", empresa: "Saep",      observacion: "Daño en pantalla de impresora por golpe" },
+      { fecha: "10/07/2026", usuario: "Flavio Ramirez",    equipo: "T45", empresa: "Saep",      observacion: "Daño en estructura por mala manipulación del equipo" }
+    ];
+
+    function getTipoEquipo(equipo) {
+      return equipo.startsWith('T') ? 'TRF' : 'Impresora';
+    }
+
+    function renderTabla(datos) {
+      const tbody = document.getElementById('tablaBody');
+
+      if (datos.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="no-results">
+                <i class="bi bi-search"></i>
+                <p class="mb-0 fw-semibold" style="color:#374151;">Sin resultados</p>
+                <p class="mb-0" style="font-size:0.85rem;">No se encontraron registros con los filtros aplicados.</p>
+              </div>
+            </td>
+          </tr>`;
+        document.getElementById('resultsInfo').textContent = 'Sin resultados';
+        return;
+      }
+
+      tbody.innerHTML = datos.map((r, i) => {
+        const esImpresora = r.equipo.startsWith('I');
+        const equipoClass = esImpresora ? 'equipo-imp' : 'equipo-trf';
+        const empresaClass = r.empresa === 'Human-net' ? 'badge-humannet' : 'badge-saep';
+        const empresaIcon = r.empresa === 'Human-net' ? 'bi-globe' : 'bi-building';
+
+        return `
+          <tr>
+            <td class="row-number">${i + 1}</td>
+            <td class="fecha-col">${r.fecha}</td>
+            <td class="usuario-col">${r.usuario}</td>
+            <td><span class="equipo-badge ${equipoClass}">${r.equipo}</span></td>
+            <td>
+              <span class="badge-empresa ${empresaClass}">
+                <i class="bi ${empresaIcon}"></i>
+                ${r.empresa}
+              </span>
+            </td>
+            <td class="obs-col">${r.observacion}</td>
+          </tr>`;
+      }).join('');
+
+      const total = reparaciones.length;
+      const mostrados = datos.length;
+      document.getElementById('resultsInfo').textContent =
+        mostrados === total
+          ? `Mostrando ${total} de ${total} registros`
+          : `Mostrando ${mostrados} de ${total} registros`;
+    }
+
+    function aplicarFiltros() {
+      const empresa = document.getElementById('filtroEmpresa').value;
+      const tipo = document.getElementById('filtroTipo').value;
+      const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
+
+      const filtrados = reparaciones.filter(r => {
+        const cumpleEmpresa = !empresa || r.empresa === empresa;
+        const cumpleTipo = !tipo || getTipoEquipo(r.equipo) === tipo;
+        const cumpleBusqueda = !busqueda || (
+          r.equipo.toLowerCase().includes(busqueda) ||
+          r.usuario.toLowerCase().includes(busqueda) ||
+          r.observacion.toLowerCase().includes(busqueda) ||
+          r.fecha.includes(busqueda)
+        );
+        return cumpleEmpresa && cumpleTipo && cumpleBusqueda;
+      });
+
+      renderTabla(filtrados);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTabla(reparaciones);
+    });
+  </script>
+
+</body>
+</html>
